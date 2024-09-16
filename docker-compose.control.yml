@@ -1,0 +1,112 @@
+version: '3.9'
+services:
+
+  tyk-postgres:
+    image: postgres:latest
+    container_name: tyk-postgres
+
+    environment:
+      - POSTGRES_DB=tyk_analytics
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=topsecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tyk
+
+  tyk-dashboard:
+    image: tykio/tyk-dashboard:v5.5
+    container_name: tyk-dashboard
+    environment:
+      - TYK_DB_LICENSEKEY=${TYK_DB_LICENSEKEY}
+      - TYK_DB_STORAGE_MAIN_TYPE=postgres
+      - TYK_DB_STORAGE_MAIN_CONNECTIONSTRING=user=postgres password=topsecretpassword host=tyk-postgres port=5432 database=tyk_analytics
+      - TYK_DB_REDISADDRS=tyk-redis:6379
+      - TYK_DB_ENABLEOWNERSHIP=true
+      - TYK_DB_AUDIT_ENABLED=true
+      - TYK_DB_AUDIT_FORMAT=text
+      - TYK_DB_AUDIT_PATH=/opt/tyk-dashboard/audit.log
+      - TYK_DB_TYKAPI_HOST=https://tyk-gateway
+      - TYK_DB_TYKAPI_PORT=8080
+    depends_on:
+      tyk-postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./confs/tyk_analytics.env
+    volumes:
+      - ./confs/server.pem:/etc/ssl/certs/server.pem
+    networks:
+      - tyk
+
+  tyk-gateway:
+    image: tykio/tyk-gateway:v5.5
+    container_name: tyk-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - TYK_GW_HOSTNAME=
+      - TYK_GW_ENABLEANALYTICS=true
+      - TYK_GW_ANALYTICSCONFIG_TYPE=
+      - TYK_GW_ANALYTICSSTORAGE_HOST=tyk-redis
+      - TYK_GW_ANALYTICSSTORAGE_PORT=6379
+      - TYK_GW_USEREDISLOG=true
+      - TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED=false
+      - TYK_GW_MANAGEMENTNODE=true
+      - TYK_GW_UPTIMETESTS_DISABLE=false
+      - TYK_GW_UPTIMETESTS_CONFIG_FAILURETRIGGERSAMPLESIZE=2
+      - TYK_GW_UPTIMETESTS_CONFIG_TIMEWAIT=3
+      - TYK_GW_UPTIMETESTS_CONFIG_ENABLEUPTIMEANALYTICS=true
+      - TYK_GW_HTTPSERVEROPTIONS_USESSL=true
+      - TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY=true
+      - TYK_GW_HTTPSERVEROPTIONS_SSLCERTIFICATES=/etc/ssl/certs/server.pem
+    env_file:
+      - ./confs/tyk.env
+    networks:
+      - tyk
+    volumes:
+      - ./confs/server.pem:/etc/ssl/certs/server.pem
+
+  tyk-redis:
+    image: redis
+    container_name: tyk-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - tyk
+
+  tyk-mdcb:
+    image: tykio/tyk-mdcb-docker:v2.7
+    container_name: tyk-mdcb
+    environment:
+      - TYK_MDCB_LICENSE=${TYK_MDCB_LICENSE}
+      - TYK_MDCB_LOGLEVEL=debug
+      - TYK_MDCB_DONTSTORESELECTIVE=true
+      - TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET=352d20ee67be67f6340b4c0605b044b7
+    ports:
+      - "9090:9090"
+      - "8181:8181"
+      - "9191:9191"
+    volumes:
+      - ./confs/tyk-mdcb.conf:/opt/tyk-sink/tyk_sink.conf
+    env_file:
+      - ./confs/tyk-mdcb.env
+    networks:
+      - tyk
+
+volumes:
+  redis-data:
+  db-data:
+
+networks:
+  tyk:
