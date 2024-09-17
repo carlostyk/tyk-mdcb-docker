@@ -33,8 +33,9 @@ services:
       - TYK_DB_AUDIT_ENABLED=true
       - TYK_DB_AUDIT_FORMAT=text
       - TYK_DB_AUDIT_PATH=/opt/tyk-dashboard/audit.log
-      - TYK_DB_TYKAPI_HOST=https://tyk-gateway
+      - TYK_DB_TYKAPI_HOST=http://tyk-gateway
       - TYK_DB_TYKAPI_PORT=8080
+      - TYK_DB_ADMINSECRET=${TYK_DB_ADMINSECRET}
     depends_on:
       tyk-postgres:
         condition: service_healthy
@@ -42,8 +43,6 @@ services:
       - "3000:3000"
     env_file:
       - ./confs/tyk_analytics.env
-    volumes:
-      - ./confs/server.pem:/etc/ssl/certs/server.pem
     networks:
       - tyk
 
@@ -65,15 +64,12 @@ services:
       - TYK_GW_UPTIMETESTS_CONFIG_FAILURETRIGGERSAMPLESIZE=2
       - TYK_GW_UPTIMETESTS_CONFIG_TIMEWAIT=3
       - TYK_GW_UPTIMETESTS_CONFIG_ENABLEUPTIMEANALYTICS=true
-      - TYK_GW_HTTPSERVEROPTIONS_USESSL=true
+      - TYK_GW_HTTPSERVEROPTIONS_USESSL=false
       - TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY=true
-      - TYK_GW_HTTPSERVEROPTIONS_SSLCERTIFICATES=/etc/ssl/certs/server.pem
     env_file:
       - ./confs/tyk.env
     networks:
       - tyk
-    volumes:
-      - ./confs/server.pem:/etc/ssl/certs/server.pem
 
   tyk-redis:
     image: redis
@@ -90,9 +86,8 @@ services:
     container_name: tyk-mdcb
     environment:
       - TYK_MDCB_LICENSE=${TYK_MDCB_LICENSE}
-      - TYK_MDCB_LOGLEVEL=debug
       - TYK_MDCB_DONTSTORESELECTIVE=true
-      - TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET=352d20ee67be67f6340b4c0605b044b7
+      - TYK_MDCB_SECURITY_PRIVATECERTIFICATEENCODINGSECRET=12345
     ports:
       - "9090:9090"
       - "8181:8181"

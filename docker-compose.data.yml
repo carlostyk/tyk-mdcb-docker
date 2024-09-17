@@ -5,9 +5,12 @@ services:
     image: tykio/tyk-pump-docker-pub:v1.11
     container_name: tyk-edge-pump-1
     env_file:
-      - ./confs/pump.postgres.env
+      - ./confs/tyk-edge-pump.env
     environment:
-      - TYK_PMP_OMITCONFIGFILE=true 
+      - TYK_PMP_OMITCONFIGFILE=true
+      - TYK_PMP_PUMPS_HYBRID_META_RPCKEY=${TYK_GW_SLAVEOPTIONS_RPCKEY}
+      - TYK_PMP_PUMPS_HYBRID_META_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
+      - TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS=tyk-edge-redis-1:6379
     networks:
       - tyk
 
@@ -27,57 +30,28 @@ services:
     ports:
       - "8090:8090"
     environment:
-      - TYK_GW_LOGLEVEL=info
-      - TYK_GW_HOSTNAME=localhost
-      - TYK_GW_PROXYDEFAULTTIMEOUT=20
       - TYK_GW_LISTENPORT=8090
-      - TYK_GW_SECRET=352d20ee67be67f6340b4c0605b044b7
-      - TYK_GW_NODESECRET=352d20ee67be67f6340b4c0605b044b7
-      - TYK_GW_USEDBAPPCONFIGS=false
-      - TYK_GW_POLICIES_POLICYSOURCE=rpc
-      - TYK_GW_POLICIES_POLICYRECORDNAME=tyk_policies
-      - TYK_GW_HOSTNAME=
-      - TYK_GW_ENABLEANALYTICS=true
-      - TYK_GW_ANALYTICSCONFIG_TYPE=rpc
-      - TYK_GW_ANALYTICSSTORAGE_TYPE=redis
       - TYK_GW_ANALYTICSSTORAGE_HOST=tyk-edge-redis-1
       - TYK_GW_ANALYTICSSTORAGE_PORT=6379
-      - TYK_GW_STORAGE_TYPE=redis
       - TYK_GW_STORAGE_ADDRS=tyk-edge-redis-1:6379
-      - TYK_GW_STORAGE_USERNAME=
-      - TYK_GW_STORAGE_PASSWORD=
-      - TYK_GW_STORAGE_DATABASE=0
-      - TYK_GW_SLAVEOPTIONS_USERPC=true
-      - TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING=tyk-mdcb:9091
       - TYK_GW_SLAVEOPTIONS_RPCKEY=${TYK_GW_SLAVEOPTIONS_RPCKEY}
       - TYK_GW_SLAVEOPTIONS_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
-      - TYK_GW_SLAVEOPTIONS_ENABLERPCCACHE=true
-      - TYK_GW_SLAVEOPTIONS_DISABLEKEYSPACESYNC=false
       - TYK_GW_SLAVEOPTIONS_GROUPID="ES01"
-      - TYK_GW_SLAVEOPTIONS_CALLTIMEOUT=10
-      - TYK_GW_SLAVEOPTIONS_PINGTIMEOUT=10
-      - TYK_GW_SLAVEOPTIONS_RPCPOOLSIZE=5
-      - TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED=true
-      - TYK_GW_USEREDISLOG=true
-      - TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES=true
-      - TYK_GW_HTTPSERVEROPTIONS_USESSL=false
-      - TYK_GW_HTTPSERVEROPTIONS_SSLCERTIFICATES=/etc/ssl/certs/server.pem
-      - TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY=true
-      - TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED=false
     env_file:
       - ./confs/tyk.env
     networks:
       - tyk
-    volumes:
-      - ./confs/server.pem:/etc/ssl/certs/server.pem
 
   tyk-edge-pump-2:
     image: tykio/tyk-pump-docker-pub:v1.11
     container_name: tyk-edge-pump-2
     env_file:
-      - ./confs/pump.postgres.env
+      - ./confs/tyk-edge-pump.env
     environment:
-      - TYK_PMP_OMITCONFIGFILE=true 
+      - TYK_PMP_OMITCONFIGFILE=true
+      - TYK_PMP_PUMPS_HYBRID_META_RPCKEY=${TYK_GW_SLAVEOPTIONS_RPCKEY}
+      - TYK_PMP_PUMPS_HYBRID_META_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
+      - TYK_PMP_ANALYTICSSTORAGECONFIG_ADDRS=tyk-edge-redis-2:6379 
     networks:
       - tyk
 
@@ -95,51 +69,19 @@ services:
     image: tykio/tyk-gateway:v5.5
     container_name: tyk-edge-gateway-2
     ports:
-      - "8091:8090"
+      - "8091:8091"
     environment:
-      - TYK_GW_LOGLEVEL=info
-      - TYK_GW_HOSTNAME=localhost
-      - TYK_GW_PROXYDEFAULTTIMEOUT=20
-      - TYK_GW_LISTENPORT=8090
-      - TYK_GW_SECRET=352d20ee67be67f6340b4c0605b044b7
-      - TYK_GW_NODESECRET=352d20ee67be67f6340b4c0605b044b7
-      - TYK_GW_USEDBAPPCONFIGS=false
-      - TYK_GW_POLICIES_POLICYSOURCE=rpc
-      - TYK_GW_POLICIES_POLICYRECORDNAME=tyk_policies
-      - TYK_GW_HOSTNAME=
-      - TYK_GW_ENABLEANALYTICS=true
-      - TYK_GW_ANALYTICSCONFIG_TYPE=rpc
-      - TYK_GW_ANALYTICSSTORAGE_TYPE=redis
+      - TYK_GW_LISTENPORT=8091
       - TYK_GW_ANALYTICSSTORAGE_HOST=tyk-edge-redis-2
       - TYK_GW_ANALYTICSSTORAGE_PORT=6379
-      - TYK_GW_STORAGE_TYPE=redis
       - TYK_GW_STORAGE_ADDRS=tyk-edge-redis-2:6379
-      - TYK_GW_STORAGE_USERNAME=
-      - TYK_GW_STORAGE_PASSWORD=
-      - TYK_GW_STORAGE_DATABASE=0
-      - TYK_GW_SLAVEOPTIONS_USERPC=true
-      - TYK_GW_SLAVEOPTIONS_CONNECTIONSTRING=tyk-mdcb:9091
       - TYK_GW_SLAVEOPTIONS_RPCKEY=${TYK_GW_SLAVEOPTIONS_RPCKEY}
       - TYK_GW_SLAVEOPTIONS_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
-      - TYK_GW_SLAVEOPTIONS_ENABLERPCCACHE=true
-      - TYK_GW_SLAVEOPTIONS_DISABLEKEYSPACESYNC=false
-      - TYK_GW_SLAVEOPTIONS_GROUPID="ES02"
-      - TYK_GW_SLAVEOPTIONS_CALLTIMEOUT=10
-      - TYK_GW_SLAVEOPTIONS_PINGTIMEOUT=10
-      - TYK_GW_SLAVEOPTIONS_RPCPOOLSIZE=5
-      - TYK_GW_SLAVEOPTIONS_SYNCHRONISERENABLED=true
-      - TYK_GW_USEREDISLOG=true
-      - TYK_GW_HTTPSERVEROPTIONS_ENABLESTRICTROUTES=true
-      - TYK_GW_HTTPSERVEROPTIONS_USESSL=false
-      - TYK_GW_HTTPSERVEROPTIONS_SSLCERTIFICATES=/etc/ssl/certs/server.pem
-      - TYK_GW_HTTPSERVEROPTIONS_SSLINSECURESKIPVERIFY=true
-      - TYK_GW_DBAPPCONFOPTIONS_NODEISSEGMENTED=false
+      - TYK_GW_SLAVEOPTIONS_GROUPID="ES01"
     env_file:
       - ./confs/tyk.env
     networks:
       - tyk
-    volumes:
-      - ./confs/server.pem:/etc/ssl/certs/server.pem
 
 volumes:
   redis-edge-data-1:
