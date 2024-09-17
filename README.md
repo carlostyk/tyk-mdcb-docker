@@ -93,5 +93,3 @@ Check that both Tyk API Gateways are up and running:
 - Tyk API Gateway 1: `http://localhost:8090/hello`
 - Tyk API Gateway 2: `http://localhost:8091/hello`
 ```
-
-Just copy and paste this into your `README.md` file. If you need any more help, feel free to ask! 😊
