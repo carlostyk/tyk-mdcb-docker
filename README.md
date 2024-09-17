@@ -82,14 +82,11 @@ curl -X PUT $DASH_URL/admin/organisations/$ORG_ID -H "Admin-Auth: $DASH_ADMIN_SE
 
 Deploy two data planes with a Tyk API Gateway, Tyk Pump, and Redis.
 
-### 9. Create a New API
-
-Create a new API to be propagated to both Tyk API Gateways.
-
-### 10. Test the Tyk API Gateways
+### 9. Test the Tyk API Gateways
 
 Check that both Tyk API Gateways are up and running:
 
 - Tyk API Gateway 1: `http://localhost:8090/hello`
 - Tyk API Gateway 2: `http://localhost:8091/hello`
+
 ```
