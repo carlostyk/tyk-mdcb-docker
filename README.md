@@ -21,8 +21,8 @@ git clone <repository-url>
 Add the MDCB and Dashboard License in the `.env` file:
 
 ```env
-TYK_DB_LICENSEKEY=
-TYK_MDCB_LICENSE=
+TYK_DB_LICENSEKEY=<<TYK_DASHBOARD_LICENSE>>
+TYK_MDCB_LICENSE=<<TYK_MDCB_LICENSE>>
 ```
 
 ### 3. Deploy the Control Plane
