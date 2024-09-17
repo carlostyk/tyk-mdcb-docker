@@ -1,4 +1,3 @@
-```markdown
 # Multi Data Center Environment Deployment
 
 This guide will help you deploy a Multi Data Center Environment with one control plane and two data planes.
