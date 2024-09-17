@@ -13,7 +13,7 @@ This guide will help you deploy a Multi Data Center Environment with one control
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/carlostyk/tyk-mdcb-docker.git
 ```
 
 ### 2. Add Licenses
