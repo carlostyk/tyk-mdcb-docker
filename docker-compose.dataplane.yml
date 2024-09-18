@@ -38,7 +38,7 @@ services:
       - TYK_GW_SLAVEOPTIONS_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
       - TYK_GW_SLAVEOPTIONS_GROUPID="ES01"
     env_file:
-      - ./confs/tyk.env
+      - ./confs/tyk-edge-gateway.env
     networks:
       - tyk
 
@@ -79,7 +79,7 @@ services:
       - TYK_GW_SLAVEOPTIONS_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
       - TYK_GW_SLAVEOPTIONS_GROUPID="ES01"
     env_file:
-      - ./confs/tyk.env
+      - ./confs/tyk-edge-gateway.env
     networks:
       - tyk
 
