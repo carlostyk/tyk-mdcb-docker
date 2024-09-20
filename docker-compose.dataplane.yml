@@ -77,7 +77,7 @@ services:
       - TYK_GW_STORAGE_ADDRS=tyk-edge-redis-2:6379
       - TYK_GW_SLAVEOPTIONS_RPCKEY=${TYK_GW_SLAVEOPTIONS_RPCKEY}
       - TYK_GW_SLAVEOPTIONS_APIKEY=${TYK_GW_SLAVEOPTIONS_APIKEY}
-      - TYK_GW_SLAVEOPTIONS_GROUPID="ES01"
+      - TYK_GW_SLAVEOPTIONS_GROUPID="ES02"
     env_file:
       - ./confs/tyk-edge-gateway.env
     networks:
