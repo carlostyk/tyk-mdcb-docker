@@ -4,7 +4,6 @@ services:
   tyk-postgres:
     image: postgres:latest
     container_name: tyk-postgres
-
     environment:
       - POSTGRES_DB=tyk_analytics
       - POSTGRES_USER=postgres
@@ -12,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db-data:/data/db
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -34,6 +33,8 @@ services:
       - "3000:3000"
     env_file:
       - ./confs/tyk_analytics.env
+    volumes:
+      - dashboard-data:/opt/tyk-dashboard
     networks:
       - tyk
 
@@ -44,6 +45,8 @@ services:
       - "8080:8080"
     env_file:
       - ./confs/tyk.env
+    volumes:
+      - gateway-data:/opt/tyk-gateway
     networks:
       - tyk
 
@@ -69,14 +72,18 @@ services:
       - "9191:9191"
     volumes:
       - ./confs/tyk-mdcb.conf:/opt/tyk-sink/tyk_sink.conf
+      - mdcb-data:/opt/tyk-sink
     env_file:
       - ./confs/tyk-mdcb.env
     networks:
       - tyk
 
 volumes:
+  postgres-data:
   redis-data:
-  db-data:
+  dashboard-data:
+  gateway-data:
+  mdcb-data:
 
 networks:
   tyk:
