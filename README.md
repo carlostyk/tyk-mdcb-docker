@@ -30,7 +30,7 @@ TYK_MDCB_LICENSE=<<TYK_MDCB_LICENSE>>
 Deploy the control plane using Docker Compose:
 
 ```bash
-docker compose -f docker-compose.control.yml up
+docker compose -f docker-compose.controlplane.yml up
 ```
 
 ### 4. Bootstrap the Tyk Dashboard
@@ -81,6 +81,10 @@ curl -X PUT $DASH_URL/admin/organisations/$ORG_ID -H "Admin-Auth: $DASH_ADMIN_SE
 ### 8. Deploy Data Planes
 
 Deploy two data planes with a Tyk API Gateway, Tyk Pump, and Redis.
+
+```bash
+docker compose -f docker-compose.dataplane.yml up
+```
 
 ### 9. Test the Tyk API Gateways
 
